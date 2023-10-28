@@ -1,4 +1,4 @@
-function [f,df,lam] = loss_inhalpha(b,ACCG,X,y,t,v,dis,eta,tau0)
+function [f,df,lam,syn] = loss_inhalpha(b,ACCG,X,y,t,v,dis,eta,tau0)
 
 p = b((size(X,2)+1):end);
 p = exp(p);
@@ -33,8 +33,7 @@ tmp(isinf(tmp)) = nan;
 ddeltat = nansum(conv(tmp(~isnan(tmp)),ACCG/max(ACCG),'same'))+eta_dt*2*((deltat)-dis*v(1)-v(2));
 tmp = ((-syn/tau+syn.*(t-deltat)/tau.^2)).*dl;
 dtau = nansum(conv(~isnan(tmp), ACCG/max(ACCG),'same'))+eta_tau*2*(tau-tau0);
-% tmp = syn./(t-deltat);
-% tmp(isinf(tmp)) = nan;
-% ddeltat = nansum((syn/tau-tmp).*dl)+eta_dt*2*((deltat)-dis*v(1)-v(2));
-% dtau = nnasum(((-syn/tau+syn.*(t-deltat)/tau.^2)).*dl)+eta_tau*2*(tau-tau0);
+% ddeltat = nansum(tmp)+eta_dt*2*((deltat)-dis*v(1)-v(2));
+% dtau = nansum(((-syn/tau+syn.*(t-deltat)/tau.^2)).*dl)+eta_tau*2*(tau-tau0);
 df = [db;dw*w;ddeltat*deltat;dtau*tau];
+syn = syn/abs(w);
